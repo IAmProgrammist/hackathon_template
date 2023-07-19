@@ -10,11 +10,20 @@ sourceCompatibility = 17
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
 
+
+// Мы - свои худшие враги
+// Поэтому так как у нас поменялся main на server, приходится танцевать с бубном
+apply plugin: 'war'
+webAppDirName = 'src/server/webapp'
+
 repositories {
     mavenCentral()
 }
 
 sourceSets {
+
+    // Разделение тестов на юнит и интеграционные привело к тому что у нас теперь три папки
+    // integration-test содержит тесты интеграционные
     integrationTest {
         java.srcDir "$projectDir/src/integration-test/java"
         resources.srcDir "$projectDir/src/integration-test/resources"
@@ -22,6 +31,7 @@ sourceSets {
         runtimeClasspath += main.output + test.output
     }
 
+    // main поменялся на server
     main {
         java {
             srcDir 'src/server/java'
@@ -31,16 +41,18 @@ sourceSets {
         }
     }
 
+    // test на server-unit-tests
     test {
         java {
-            srcDir 'src/server-unit-tests/java'
+            srcDir 'src/server-unit-test/java'
         }
         resources {
-            srcDir 'src/server-unit-tests/resources'
+            srcDir 'src/server-unit-test/resources'
         }
     }
 }
 
+// Наследуем зависимости от нормальных тестов test к нашим самопальным интеграционным
 configurations {
     integrationTestImplementation.extendsFrom testImplementation
     integrationTestRuntime.extendsFrom testRuntime
@@ -48,6 +60,7 @@ configurations {
     integrationTestAnnotationProcessor.extendsFrom testAnnotationProcessor
 }
 
+// Зависимости
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
     integrationTestImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
@@ -66,17 +79,21 @@ dependencies {
     implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 }
 
+// Регистрируем интеграционные тесты как отдельную задачу
 tasks.register('integrationTest', Test) {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
 }
 
+// Включили в check интеграционные тесты. Не знаю зачем, но в туторе сказали надо
 check.dependsOn integrationTest
 
+// Тут всё просто
 test {
     useJUnitPlatform()
 }
 
+// Интеграционные тесты работают с Selenide, поэтому важно в нём обеспечить headless режим
 integrationTest {
     useJUnitPlatform()
     systemProperty 'selenide.headless', System.getProperty('selenide.headless')

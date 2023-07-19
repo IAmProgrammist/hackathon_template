@@ -8,7 +8,7 @@ module.exports = {
     entry: './src/client/index.js',
     devServer: {
         static: {
-            directory: path.join(__dirname, 'build/client'),
+            directory: path.join(__dirname, '/src/server/java/webapp'),
         },
         historyApiFallback: true,
         compress: true,
@@ -16,7 +16,8 @@ module.exports = {
     },
     output: {
         filename: "build.js",
-        path: __dirname + "/build/client"
+        // Это отвратительно, но это позволяет делать сервер максимально безболезненно
+        path: __dirname + "/src/server/java/webapp"
     },
     module: {
         rules: [
