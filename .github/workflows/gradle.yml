@@ -5,7 +5,7 @@ on: [ push, pull_request ]
 jobs:
   build-server:
     runs-on: ubuntu-latest
-    displayName: Build server
+    name: Build server
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
@@ -20,7 +20,7 @@ jobs:
   unittest-server:
     runs-on: ubuntu-latest
     needs: build-server
-    displayName: Unit test server
+    name: Unit test server
     steps:
       - uses: actions/checkout@v3
       - name: Unit test server
@@ -28,7 +28,7 @@ jobs:
   run-server:
     runs-on: ubuntu-latest
     needs: unittest-server
-    displayName: Run server
+    name: Run server
     steps:
       - uses: actions/checkout@v3
       - name: Download Tomcat
@@ -43,7 +43,7 @@ jobs:
         run: ./apache-tomcat-10.1.11/bin/startup.sh
   build-client:
     runs-on: ubuntu-latest
-    displayName: Build client
+    name: Build client
     steps:
       - uses: actions/checkout@v3
       - name: Set up Node.js
