@@ -23,6 +23,8 @@ jobs:
     name: Unit test server
     steps:
       - uses: actions/checkout@v3
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
       - name: Unit test server
         run: ./gradlew test ---info
   run-server:
