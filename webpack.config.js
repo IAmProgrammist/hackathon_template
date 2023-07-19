@@ -5,7 +5,7 @@ const path = require('path');
 module.exports = {
     mode: "production",
     plugins: [new MiniCssExtractPlugin(), new HtmlWebpackPlugin()],
-    entry: './src/main/client/index.js',
+    entry: './src/client/index.js',
     devServer: {
         static: {
             directory: path.join(__dirname, 'build/client'),
