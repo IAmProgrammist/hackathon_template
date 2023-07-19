@@ -54,7 +54,7 @@ jobs:
       - uses: actions/download-artifact@master
         with:
           name: wartifact
-          path: build/libs/template.war
+          path: build/libs
       - name: Add .war file
         run: cp build/libs/template.war apache-tomcat-10.1.11/webapps
       - name: Rename .war
