@@ -61,6 +61,8 @@ jobs:
         run: mv apache-tomcat-10.1.11/webapps/template.war apache-tomcat-10.1.11/webapps/ROOT.war
       - name: Start server
         run: ./apache-tomcat-10.1.11/bin/startup.sh
+      - name: Stop server
+        run: ./apache-tomcat-10.1.11/bin/shutdown.sh
   build-client:
     runs-on: ubuntu-latest
     name: Build client
