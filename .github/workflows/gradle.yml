@@ -3,9 +3,9 @@ name: Java CI with Gradle
 on: [ push, pull_request ]
 
 jobs:
-  build-server:
+  build:
     runs-on: ubuntu-latest
-    name: Build server
+    name: Build both server and client
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -16,14 +16,14 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
-        run: ./gradlew clean bootWar --info
+        run: ./gradlew clean war --info
       - uses: actions/upload-artifact@master
         with:
-          name: wartifact
-          path: build/libs/template.war
+          name: buildres
+          path: build
   unittest-server:
     runs-on: ubuntu-latest
-    needs: build-server
+    needs: build
     name: Unit test server
     steps:
       - uses: actions/checkout@v3
@@ -32,14 +32,18 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
+      - uses: actions/download-artifact@master
+        with:
+          name: buildres
+          path: build
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Unit test server
         run: ./gradlew test --info
-  run-server:
+  integration-test:
     runs-on: ubuntu-latest
     needs: unittest-server
-    name: Run server
+    name: Run integration tests
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -53,26 +57,15 @@ jobs:
         run: rm -rf apache-tomcat-10.1.11/webapps/ROOT
       - uses: actions/download-artifact@master
         with:
-          name: wartifact
-          path: build/libs
+          name: buildres
+          path: build
       - name: Add .war file
-        run: cp build/libs/template.war apache-tomcat-10.1.11/webapps
+        run: cp build/libs/template-plain.war apache-tomcat-10.1.11/webapps
       - name: Rename .war
-        run: mv apache-tomcat-10.1.11/webapps/template.war apache-tomcat-10.1.11/webapps/ROOT.war
+        run: mv apache-tomcat-10.1.11/webapps/template-plain.war apache-tomcat-10.1.11/webapps/ROOT.war
       - name: Start server
         run: ./apache-tomcat-10.1.11/bin/startup.sh
+      - name: Run integration tests
+        run: ./gradlew integrationTest --info -Dselenide.headless=true
       - name: Stop server
         run: ./apache-tomcat-10.1.11/bin/shutdown.sh
-  build-client:
-    runs-on: ubuntu-latest
-    name: Build client
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install node dependencies
-        run: npm install
-      - name: Build client
-        run: npm run build
