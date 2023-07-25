@@ -11,6 +11,7 @@ import static com.codeborne.selenide.Selenide.$;
 public class WebTestExample {
     @BeforeEach
     public void openPage() {
+        Configuration.browser = "firefox";
         Selenide.open("http://localhost:8080/");
     }
 

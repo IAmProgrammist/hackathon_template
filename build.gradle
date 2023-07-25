@@ -37,9 +37,9 @@ sourceSets {
 
     // Разделение тестов на юнит и интеграционные привело к тому что у нас теперь три папки
     // integration-test содержит тесты интеграционные
-    integrationTest {
-        java.srcDir "$projectDir/src/integration-test/java"
-        resources.srcDir "$projectDir/src/integration-test/resources"
+    webTest {
+        java.srcDir "$projectDir/src/web-test/java"
+        resources.srcDir "$projectDir/src/web-test/resources"
         compileClasspath += main.output + test.output
         runtimeClasspath += main.output + test.output
     }
@@ -67,18 +67,18 @@ sourceSets {
 
 // Наследуем зависимости от нормальных тестов test к нашим самопальным интеграционным
 configurations {
-    integrationTestImplementation.extendsFrom testImplementation
-    integrationTestRuntime.extendsFrom testRuntime
-    integrationTestCompileOnly.extendsFrom testCompileOnly
-    integrationTestAnnotationProcessor.extendsFrom testAnnotationProcessor
+    webTestImplementation.extendsFrom testImplementation
+    webTestRuntime.extendsFrom testRuntime
+    webTestCompileOnly.extendsFrom testCompileOnly
+    webTestAnnotationProcessor.extendsFrom testAnnotationProcessor
 }
 
 // Зависимости
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
-    integrationTestImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
-    integrationTestImplementation 'com.codeborne:selenide:6.12.2'
-    integrationTestImplementation 'com.github.javafaker:javafaker:1.0.2'
+    webTestImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+    webTestImplementation 'com.codeborne:selenide:6.12.2'
+    webTestImplementation 'com.github.javafaker:javafaker:1.0.2'
 
     compileOnly 'org.projectlombok:lombok:1.18.28'
     annotationProcessor 'org.projectlombok:lombok:1.18.28'
@@ -86,20 +86,20 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.28'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
 
-    integrationTestCompileOnly 'org.projectlombok:lombok:1.18.28'
-    integrationTestAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
+    webTestCompileOnly 'org.projectlombok:lombok:1.18.28'
+    webTestAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
 
     implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 }
 
 // Регистрируем интеграционные тесты как отдельную задачу
-tasks.register('integrationTest', Test) {
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
+tasks.register('webTest', Test) {
+    testClassesDirs = sourceSets.webTest.output.classesDirs
+    classpath = sourceSets.webTest.runtimeClasspath
 }
 
 // Включили в check интеграционные тесты. Не знаю зачем, но в туторе сказали надо
-check.dependsOn integrationTest
+check.dependsOn webTest
 
 // Тут всё просто
 test {
@@ -107,7 +107,7 @@ test {
 }
 
 // Интеграционные тесты работают с Selenide, поэтому важно в нём обеспечить headless режим
-integrationTest {
+webTest {
     useJUnitPlatform()
     systemProperty 'selenide.headless', System.getProperty('selenide.headless')
 }

@@ -66,6 +66,6 @@ jobs:
       - name: Start server
         run: ./apache-tomcat-10.1.11/bin/startup.sh
       - name: Run integration tests
-        run: ./gradlew integrationTest --info -Dselenide.headless=true
+        run: ./gradlew webTest --info -Dselenide.headless=true
       - name: Stop server
         run: ./apache-tomcat-10.1.11/bin/shutdown.sh
